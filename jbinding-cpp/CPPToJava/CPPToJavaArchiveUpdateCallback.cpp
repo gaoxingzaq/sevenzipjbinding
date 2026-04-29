@@ -276,9 +276,16 @@ STDMETHODIMP CPPToJavaArchiveUpdateCallback::GetProperty(UInt32 index, PROPID pr
                 jstring nameString = jniEnvInstance->NewString(pathChars + lastSlash + 1, pathLen - lastSlash - 1);
                 cPropVariant = UString(FromJChar(jniEnvInstance, nameString));
                 jniEnvInstance->DeleteLocalRef(nameString);
+            } else if (lastSlash < 0) {
+                // No slash - the whole path is the filename
+                cPropVariant = UString(FromJChar(jniEnvInstance, pathString));
             }
             jniEnvInstance->ReleaseStringChars(pathString, pathChars);
             jniEnvInstance->DeleteLocalRef(pathValue);
+        } else {
+            // propertyPath is null - return VT_EMPTY
+            value->vt = VT_EMPTY;
+            return S_OK;
         }
         break;
     }

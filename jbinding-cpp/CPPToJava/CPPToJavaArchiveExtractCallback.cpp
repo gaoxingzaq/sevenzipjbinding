@@ -58,7 +58,9 @@ STDMETHODIMP CPPToJavaArchiveExtractCallback::CryptoGetTextPassword(BSTR *passwo
         return _cryptoGetTextPasswordImpl->CryptoGetTextPassword(password);
     }
 
-    return E_NOINTERFACE;
+    // No password callback available - return empty password
+    *password = SysAllocString(L"");
+    return S_OK;
 }
 
 STDMETHODIMP CPPToJavaArchiveExtractCallback::GetStream(UInt32 index,
@@ -133,3 +135,11 @@ STDMETHODIMP CPPToJavaArchiveExtractCallback::SetOperationResult(Int32 resultEOp
 
     return jniEnvInstance.exceptionCheck() ? S_FALSE : S_OK;
 }
+
+STDMETHODIMP CPPToJavaArchiveExtractCallback::ReportExtractResult(UInt32 indexType, UInt32 index, Int32 opRes) noexcept {
+    TRACE_OBJECT_CALL("ReportExtractResult");
+    // This method is called by newer 7-zip versions to report extracting errors.
+    // We don't need to do anything special here - just return S_OK.
+    return S_OK;
+}
+

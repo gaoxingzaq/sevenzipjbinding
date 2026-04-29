@@ -7,6 +7,7 @@
 
 class CPPToJavaArchiveExtractCallback : public virtual IArchiveExtractCallback,
                                         public virtual ICryptoGetTextPassword,
+                                        public virtual IArchiveExtractCallbackMessage2,
                                         public virtual CPPToJavaAbstract,
                                         public virtual CMyUnknownImp {
 private:
@@ -71,6 +72,7 @@ public:
   //  */
   // STDMETHOD(PrepareOperation)(Int32 askExtractMode);
   // STDMETHOD(SetOperationResult)(Int32 resultEOperationResult);
+
 public:
   // Z7_COM_QI_BEGIN2(IArchiveExtractCallback)
   // // Z7_COM_QI_ENTRY(ICryptoGetTextPassword)
@@ -79,10 +81,11 @@ public:
 
   Z7_IFACE_COM7_IMP_NONFINAL(IArchiveExtractCallback)
   Z7_IFACE_COM7_IMP_NONFINAL(ICryptoGetTextPassword)
+  Z7_IFACE_COM7_IMP_NONFINAL(IArchiveExtractCallbackMessage2)
 
 private:
-  Z7_COM_UNKNOWN_IMP_3(IArchiveExtractCallback, ICryptoGetTextPassword,
-                       IProgress)
+  Z7_COM_UNKNOWN_IMP_4(IArchiveExtractCallback, ICryptoGetTextPassword,
+                       IProgress, IArchiveExtractCallbackMessage2)
 };
 
 #endif /*CPPTOJAVAARCHIVEEXTRACTCALLBACK_H_*/
