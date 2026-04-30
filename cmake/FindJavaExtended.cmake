@@ -22,8 +22,7 @@ IF(JAVA_HOME)
 ENDIF()
 SET(HELP
 "Please set JAVA_HOME to jdk8 or higher or use -DJAVA_JDK=<path-to-jdk> switch for cmake.
-Don't forget to delete 'CMakeCache.txt' file, if you want '-D' parameter to take effect."
-)
+Don't forget to delete 'CMakeCache.txt' file, if you want '-D' parameter to take effect.")
 
 IF(NOT "${JAVA_JDK}" STREQUAL "${JAVA_JDK_OLD}")
     IF(NOT JAVA_JDK_OLD STREQUAL "")
@@ -287,6 +286,32 @@ IF(NOT JAVAC_TEST_OK)
     
     SET(JAVAC_TEST_DIR "${PROJECT_BINARY_DIR}/javac-test")
     FILE(MAKE_DIRECTORY "${JAVAC_TEST_DIR}")
+    
+    # Test Java 8 stream API (lambda expressions)
+    FILE(WRITE "${JAVAC_TEST_DIR}/JavaVersionTest.java" "
+import java.util.Arrays;
+import java.util.List;
+
+public class JavaVersionTest {
+    public static void main(String args[]) {
+        List<String> list = Arrays.asList(\"a\", \"b\", \"c\");
+        list.stream().forEach(s -> System.out.print(s));
+    }
+}")
+    EXECUTE_PROCESS(COMMAND ${JAVA_COMPILE} JavaVersionTest.java 
+                    WORKING_DIRECTORY ${JAVAC_TEST_DIR}
+                    RESULT_VARIABLE version_test_result
+                    OUTPUT_VARIABLE version_test_output 
+                    ERROR_VARIABLE version_test_err)
+    IF(version_test_result)
+        MESSAGE(FATAL_ERROR "${JAVA_COMPILE} does not support Java 8 features (lambda expressions).
+        
+NOTE: Java 8 or higher is required in order to compile 7-Zip-JBinding.
+Your JDK path: ${JAVA_JDK}
+        
+Javac error message: ${version_test_err}")
+    ENDIF()
+    
     FILE(WRITE "${JAVAC_TEST_DIR}/TestClass.java" "
 public class TestClass {
     private static class Java15Test<T> {
